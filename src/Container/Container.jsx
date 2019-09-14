@@ -2,17 +2,18 @@ import React from 'react';
 import Navbar from '../Navbar/Navbar'
 import Login from '../Login/Login'
 import Trees from '../Trees/Trees'
+import Members from '../Members/Members'
 import './Container.css';
 import '../../node_modules/siimple'
-import { isNoop } from '@babel/types';
 
 class Container extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            authStatus: 'true',
+            authStatus: '',
             userEmail: '',
-            userId: '42'
+            userId: '',
+            treeId: ''
         };
     }
 
@@ -20,7 +21,11 @@ class Container extends React.Component {
         return (
             <div id="container">
                 <Navbar></Navbar>
-                {this.state.authStatus === 'false' ? <Login parentCallback = {this.checkAuthStatus} parentCallback2 = {this.retrieveUserEmail}></Login>:<Trees userId = {this.state.userId}></Trees>}
+                {this.state.authStatus !== 'true' ? 
+                <Login key='1' parentCallback = {this.checkAuthStatus} parentCallback2 = {this.retrieveUserEmail}></Login>
+                :[this.state.treeId ?
+                    <Members key='3' treeId={this.state.treeId}></Members> 
+                    :<Trees key='2' parentCallback3 = {this.retrieveTreeId} userId = {this.state.userId}></Trees>]}
             </div>
         );
     }
@@ -29,10 +34,22 @@ class Container extends React.Component {
         this.setState({
             authStatus: authStatusToBe
         });
-        console.log(this.state.authStatus);
     }
    
-    //we retrieve it from the child component login
+    retrieveTreeId = (treeId) => {
+        this.setState({
+            treeId: treeId
+        });
+        console.log(this.state.treeId);
+
+    } 
+
+    check() {
+        console.log(this.state.treeId);
+
+    }
+
+    //we retrieve user email from the child component Login
     retrieveUserEmail = (userEmail) => {
         this.setState({
             userEmail: userEmail
@@ -41,23 +58,16 @@ class Container extends React.Component {
         this.retrieveUserId(this.state.userEmail);
     }
 
-    //we retrieve it from a request to database
+    //we retrieve user id from a request to database
     retrieveUserId = (userEmail) => {
-        fetch(`http://localhost:9091/getUser/${userEmail}`, { 
+        fetch(`http://localhost:8000/api/user/${userEmail}`, { 
             method: 'get'
         }).then(res => {
-            console.log(res);
-            //res is a RedeableStream so we need a reader
-            let reader = res.body.getReader();
-            return reader.read();
+            return res.json();
         }).then(resp => {
-            console.log(resp);
-            let user = new TextDecoder("utf-8").decode(resp.value);
-            console.log(user);
-            user = JSON.parse(user);
-            console.log(user.id);
+            console.log(JSON.stringify(resp));
             this.setState({
-                userId: user.id
+                userId: resp.id
             });
         })
     }

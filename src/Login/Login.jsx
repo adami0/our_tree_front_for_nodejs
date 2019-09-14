@@ -28,7 +28,7 @@ class Login extends React.Component {
                 <input id="input1" type="email" className="siimple-input" onChange={(evt) => this.handleChangeInput1(evt)}></input>
                 <div id="input2header">{this.state.passwordInput}</div>
                 <input id="input2" type="text" className="siimple-input" onChange={(evt) => this.handleChangeInput2(evt)}></input>
-                <button className="siimple-btn btn" onClick={()=> this.logInOrSignUp()}>Validate</button>
+                <button id="btn-validate" className="siimple-btn btn" onClick={()=> this.logInOrSignUp()}>Validate</button>
                 <div id="sign-up-container">
                     <div id="sign-up" onClick={() => this.loginOrsignUpPage()}>{this.state.pageChoice}</div>
                 </div>
@@ -78,36 +78,36 @@ class Login extends React.Component {
     //authentification
     sendFormToLogIn() {
         if (this.state.input1value !== '' && this.state.input2value !== '') {
+            console.log('sending');
             const user = { email: this.state.input1value, password: this.state.input2value };
-            fetch('http://localhost:9091/login', {
-                method: 'post',
+            fetch('http://localhost:8000/api/user/auth', {
+                method: 'POST',
                 body: JSON.stringify(user),
                 headers: { "Content-Type": "application/json" }
             }).then(res => {
-                //res is a RedeableStream so we need a reader
-                let reader = res.body.getReader();
-                return reader.read();
+                console.log("res email: " + res.email);
+                console.log("stringified res: " + JSON.stringify(res));
+                return res.json();
             }).then(resp => {
-                console.log(resp);
-                let string = new TextDecoder("utf-8").decode(resp.value);
-                if (string === "false") {
-                    this.setState({
-                        messageToUser: 'invalid email/password'
-                    })
-                } else {
-                    console.log(this.state.authStatusToBe)
+                console.log("resp: "+ JSON.stringify(resp));
+                if (!resp.error) {
+                    console.log("authStatusToBe: " + this.state.authStatusToBe)
                     this.setState({
                         messageToUser: '',
                         authStatusToBe: 'true',
                         userEmail: user.email
                     })
-                    console.log(this.state.authStatusToBe)
+                    console.log("authStatusToBe: " + this.state.authStatusToBe)
                     //how the app knows the authentification status
                     this.sendAuthStatusToParent();
                     this.sendUserEmailToParent();
+                } else {
+                    this.setState({
+                        messageToUser: 'invalid email/password'
+                    })
                 }
             })
-        }else {
+        } else {
             this.setState({
                 messageToUser: 'please indicate your email and password'
             })
@@ -119,19 +119,22 @@ class Login extends React.Component {
         console.log('postUser');
         if (this.state.input1value !== '' && this.state.input2value !== '') {
             const user = { email: this.state.input1value, password: this.state.input2value };
-            fetch('http://localhost:9091/postUser', {
+            fetch('http://localhost:8000/api/user/register', {
                 method: 'POST',
                 body: JSON.stringify(user),
                 headers: { "Content-Type": "application/json" }
             }).then(res => {
-                //res is a RedeableStream so we need a reader
-                let reader = res.body.getReader();
-                return reader.read();
+                return res;
             }).then(resp => {
-                console.log(resp);
-                let string = new TextDecoder("utf-8").decode(resp.value);
-                console.log(string);
-                let displayString = (string === 'an account already exists with this email') ? this.setState({messageToUser: string}) : this.setState({messageToUser: 'account created'});
+                if (resp.status === 201) {
+                    this.setState({
+                        messageToUser: 'account created'
+                    })
+                } else {
+                    this.setState({
+                        messageToUser: 'account already exists'
+                    });
+                }
             });
         } else {
             this.setState({
