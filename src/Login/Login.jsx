@@ -14,7 +14,8 @@ class Login extends React.Component {
             pageChoice: 'Sign up',
             messageToUser: '',
             authStatusToBe: 'false',
-            userEmail: ''
+            userEmail: '',
+            user_token: null
         };
     }
 
@@ -27,7 +28,7 @@ class Login extends React.Component {
                 <div id="input1header">{this.state.identifierInput}</div>
                 <input id="input1" type="email" className="siimple-input" onChange={(evt) => this.handleChangeInput1(evt)}></input>
                 <div id="input2header">{this.state.passwordInput}</div>
-                <input id="input2" type="text" className="siimple-input" onChange={(evt) => this.handleChangeInput2(evt)}></input>
+                <input id="input2" type="password" className="siimple-input" onChange={(evt) => this.handleChangeInput2(evt)}></input>
                 <button id="btn-validate" className="siimple-btn btn" onClick={()=> this.logInOrSignUp()}>Validate</button>
                 <div id="sign-up-container">
                     <div id="sign-up" onClick={() => this.loginOrsignUpPage()}>{this.state.pageChoice}</div>
@@ -85,22 +86,24 @@ class Login extends React.Component {
                 body: JSON.stringify(user),
                 headers: { "Content-Type": "application/json" }
             }).then(res => {
-                console.log("res email: " + res.email);
-                console.log("stringified res: " + JSON.stringify(res));
                 return res.json();
             }).then(resp => {
-                console.log("resp: "+ JSON.stringify(resp));
+                console.log("resp: "+ resp);
+                //storing jwt token in browser
+                localStorage.setItem('ourTreeToken', resp.token);
                 if (!resp.error) {
                     console.log("authStatusToBe: " + this.state.authStatusToBe)
                     this.setState({
                         messageToUser: '',
                         authStatusToBe: 'true',
-                        userEmail: user.email
+                        userEmail: user.email,
+                        user_token: localStorage.getItem('ourTreeToken')
                     })
                     console.log("authStatusToBe: " + this.state.authStatusToBe)
                     //how the app knows the authentification status
                     this.sendAuthStatusToParent();
                     this.sendUserEmailToParent();
+                    this.sendUserTokenToParent();
                 } else {
                     this.setState({
                         messageToUser: 'invalid email/password'
@@ -150,6 +153,10 @@ class Login extends React.Component {
 
     sendUserEmailToParent() {
         this.props.parentCallback2(this.state.userEmail);
+    }
+
+    sendUserTokenToParent() {
+        this.props.parentCallback3(this.state.user_token);
     }
 
     //sign up configuration

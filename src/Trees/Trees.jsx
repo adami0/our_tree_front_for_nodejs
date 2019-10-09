@@ -8,20 +8,20 @@ class Trees extends React.Component {
             displayInput: false,
             inputTreeValue: '',
             treeList: [],
-            newNameTree: '',
+            newNameTree: ''
         };
     }
 
     render() {
         return (
             <div id="trees-container">
-                <div id="page-name">My page</div>
+                <div id="page-name">Welcome {this.props.userEmail}</div>
                 <div id="treeList" className="siimple-list">
                     {this.state.treeList.map(el => {
                         return (
                             <div className="treeListDiv siimple-list-item" key={el.id} onClick={() => { }}>
                                 <input className="siimple-input siimple-input--fluid white hide" type="text" placeholder={el.name} onChange={(evt) => this.handleChangeNewNameTree(evt)}></input>
-                                <div ref={el.id} className="siimple-btn siimple-btn--light siimple-btn--fluid" onClick={() => {this.displayTree(el.id)}}>{el.name}</div>
+                                <div ref={el.id} className="siimple-btn siimple-btn--light siimple-btn--fluid" onClick={() => { this.displayTree(el.id) }}>{el.name}</div>
                                 <div className="siimple-btn siimple-btn--primary siimple-btn--small" onClick={() => this.displayRenameInput(el.id)}>Rename</div>
                                 <div className="siimple-btn siimple-btn--primary siimple-btn--small hide" onClick={() => this.renameTree(el.id)}>Send</div>
                                 <div className="siimple-btn siimple-btn--error siimple-btn--small hide" onClick={() => this.cancelRename(el.id)}>Cancel</div>
@@ -41,6 +41,7 @@ class Trees extends React.Component {
     }
 
 
+    //use to display or hide divs to modify or delete the tree
     cancelRename(treeId) {
         this.refs[treeId].classList.remove("hide");
         console.log(this.refs[treeId].parentElement.children[0]);
@@ -51,7 +52,7 @@ class Trees extends React.Component {
     }
 
     //call this function when the component is appearing
-    componentWillMount() {
+    componentDidMount() {
         this.retrievingTreesList();
     }
 
@@ -65,18 +66,13 @@ class Trees extends React.Component {
     createTree() {
         if (this.state.inputTreeValue !== '') {
             const tree = { name: this.state.inputTreeValue, user_id: this.props.userId };
-            fetch(`http://localhost:8000/postTree`, {
+            fetch(`http://localhost:8000/api/tree/post_tree`, {
                 method: 'post',
                 body: JSON.stringify(tree),
                 headers: { "Content-Type": "application/json" }
             }).then(res => {
-                //res is a RedeableStream so we need a reader
-                let reader = res.body.getReader();
-                return reader.read();
-            }).then(resp => {
-                console.log(resp);
-                let string = new TextDecoder("utf-8").decode(resp.value);
-                console.log(string);
+                return res.json();
+            }).then(() => {
                 this.retrievingTreesList();
                 this.setState({
                     displayInput: false
@@ -151,20 +147,19 @@ class Trees extends React.Component {
     renameTree(treeId) {
         if (this.state.newNameTree !== '') {
             const tree = { id: treeId, name: this.state.newNameTree, user_id: this.props.userId };
-            fetch(`http://localhost:9091/updateTree`, {
+            fetch(`http://localhost:8000/api/tree/update_tree`, {
                 method: 'put',
                 body: JSON.stringify(tree),
                 headers: { "Content-Type": "application/json" }
             }).then(res => {
-                //res is a RedeableStream so we need a reader
-                let reader = res.body.getReader();
-                return reader.read();
+                return res.json();
             }).then(resp => {
-                console.log(resp);
-                let string = new TextDecoder("utf-8").decode(resp.value);
-                console.log(string);
                 this.retrievingTreesList();
                 this.cancelRename(treeId);
+                //reinitializing state of newNameTree
+                this.setState({
+                    newNameTree: ''
+                });
             })
         }
     }
@@ -172,18 +167,21 @@ class Trees extends React.Component {
     //show the list of the trees to the user
     retrievingTreesList() {
         if (this.props.userId) {
+            const user_token = {user_token: this.props.user_token};
+            console.log(this.props.user_token);
             fetch(`http://localhost:8000/api/tree/${this.props.userId}`, {
-                method: 'get'
-            })
-                .then(res => {
-                    console.log(res);
-                    return res.json();
-                }).then(resp => {
-                    this.setState({
-                        treeList: resp
-                    })
-                    console.log(this.state.treeList);
+                method: 'post',
+                body: JSON.stringify(user_token),
+                headers: { "Content-Type": "application/json" }
+            }).then(res => {
+                console.log(res);
+                return res.json();
+            }).then(resp => {
+                console.log(JSON.stringify(resp));
+                this.setState({
+                    treeList: resp
                 })
+            })
         } else {
             return;
         }
