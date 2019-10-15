@@ -22,7 +22,7 @@ class Login extends React.Component {
     render() {
         return (
             <div id="login-container">                
-                <div id="page-name">{this.state.pageName}</div>
+                <div id="page-name" className="siimple--rounded">{this.state.pageName}</div>
                 {this.state.messageToUser && this.state.messageToUser !== 'account created' ? <div id="messageToUser" className="siimple-alert siimple-alert--error">{this.state.messageToUser}</div> : null}
                 {this.state.messageToUser === 'account created' ? <div id="messageToUser" className="siimple-alert siimple-alert--success">{this.state.messageToUser}</div> : null}
                 <div id="input1header">{this.state.identifierInput}</div>
@@ -80,6 +80,7 @@ class Login extends React.Component {
     sendFormToLogIn() {
         if (this.state.input1value !== '' && this.state.input2value !== '') {
             console.log('sending');
+            localStorage.removeItem('ourTreeToken');
             const user = { email: this.state.input1value, password: this.state.input2value };
             fetch('http://localhost:8000/api/user/auth', {
                 method: 'POST',
@@ -88,7 +89,7 @@ class Login extends React.Component {
             }).then(res => {
                 return res.json();
             }).then(resp => {
-                console.log("resp: "+ resp);
+                console.log("resp: "+ JSON.stringify(resp));
                 //storing jwt token in browser
                 localStorage.setItem('ourTreeToken', resp.token);
                 if (!resp.error) {

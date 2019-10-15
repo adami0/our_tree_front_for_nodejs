@@ -22,11 +22,11 @@ class Container extends React.Component {
     render() {
         return (
             <div id="container">
-                <Navbar></Navbar>
+                <Navbar user_token={this.state.user_token} parentCallback={this.makeTreeIdNull}></Navbar>
                 {(this.state.authStatus !== 'true' || this.state.userIdStatus !== 'true') ? 
-                <Login key='1' parentCallback = {this.checkAuthStatus} parentCallback2 = {this.retrieveUserEmail} parentCallback3 = {this.retrieveUserToken}></Login>
+                <Login key='1' parentCallback = {this.checkAuthStatus} parentCallback3 = {this.retrieveUserToken} parentCallback2 = {this.retrieveUserEmail}></Login>
                 :[this.state.treeId ?
-                    <Members key='3' treeId={this.state.treeId}></Members> 
+                    <Members key='3' user_token={this.state.user_token} treeId={this.state.treeId}></Members> 
                     :<Trees key='2' user_token={this.state.user_token} parentCallback3 = {this.retrieveTreeId} userId = {this.state.userId} userEmail = {this.state.userEmail}></Trees>]}
             </div>
         );
@@ -51,19 +51,27 @@ class Container extends React.Component {
 
     }
 
+    makeTreeIdNull = (treeIdNull) => {
+        this.setState({
+            treeId: treeIdNull
+        })
+    }
+
     //we retrieve user email from the child component Login
     retrieveUserEmail = (userEmail) => {
         this.setState({
             userEmail: userEmail
         })
         console.log(this.state.userEmail);
-        this.retrieveUserId(this.state.userEmail);
     }
 
     //we retrieve user id from a request to database to be able to select trees from this user
     retrieveUserId = (userEmail) => {
-        fetch(`http://localhost:8000/api/user/${userEmail}`, { 
-            method: 'get'
+        const user = {token: this.state.user_token, email: this.state.userEmail};
+        fetch(`http://localhost:8000/api/user/email/${userEmail}`, { 
+            method: 'post',
+            body: JSON.stringify(user),
+            headers: { "Content-Type": "application/json" }
         }).then(res => {
             return res.json();
         }).then(resp => {
@@ -79,6 +87,7 @@ class Container extends React.Component {
         this.setState({
             user_token: user_token
         })
+        this.retrieveUserId(this.state.userEmail);        
     }
 
 };

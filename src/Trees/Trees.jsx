@@ -33,7 +33,7 @@ class Trees extends React.Component {
                 {this.state.displayInput ?
                     <div id="inputTreeContainer">
                         <input id="inputTree" className="siimple-input center" type="text" placeholder="Name of your tree" onChange={(evt) => this.handleChangeInputTree(evt)}></input>
-                        <button className="siimple-btn siimple-btn--primary btn center" onClick={() => this.createTree()}>Send</button>
+                        <button className="siimple-btn siimple-btn--primary btn center" onClick={() => this.createTree()}>Save</button>
                     </div>
                     : <button className="siimple-btn siimple-btn--primary btn" onClick={() => this.displayInput()}>Create a tree</button>}
             </div>
@@ -65,7 +65,7 @@ class Trees extends React.Component {
     //creating a tree in database
     createTree() {
         if (this.state.inputTreeValue !== '') {
-            const tree = { name: this.state.inputTreeValue, user_id: this.props.userId };
+            const tree = { name: this.state.inputTreeValue, user_id: this.props.userId, token: this.props.user_token, email: this.props.userEmail };
             fetch(`http://localhost:8000/api/tree/post_tree`, {
                 method: 'post',
                 body: JSON.stringify(tree),
@@ -146,7 +146,7 @@ class Trees extends React.Component {
     //replace a name of a tree in the db
     renameTree(treeId) {
         if (this.state.newNameTree !== '') {
-            const tree = { id: treeId, name: this.state.newNameTree, user_id: this.props.userId };
+            const tree = { id: treeId, name: this.state.newNameTree, user_id: this.props.userId, token: this.props.user_token, email: this.props.userEmail };
             fetch(`http://localhost:8000/api/tree/update_tree`, {
                 method: 'put',
                 body: JSON.stringify(tree),
@@ -167,19 +167,19 @@ class Trees extends React.Component {
     //show the list of the trees to the user
     retrievingTreesList() {
         if (this.props.userId) {
-            const user_token = {user_token: this.props.user_token};
-            console.log(this.props.user_token);
-            fetch(`http://localhost:8000/api/tree/${this.props.userId}`, {
+            const user = {token: this.props.user_token, email: this.props.userEmail};
+            console.log('tree list user email' + this.props.userEmail);
+            fetch(`http://localhost:8000/api/tree/user_id/${this.props.userId}`, {
                 method: 'post',
-                body: JSON.stringify(user_token),
+                body: JSON.stringify(user),
                 headers: { "Content-Type": "application/json" }
             }).then(res => {
                 console.log(res);
                 return res.json();
             }).then(resp => {
-                console.log(JSON.stringify(resp));
+                console.log(JSON.stringify(resp.rows));
                 this.setState({
-                    treeList: resp
+                    treeList: resp.rows
                 })
             })
         } else {

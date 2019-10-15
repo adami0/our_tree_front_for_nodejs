@@ -1,4 +1,76 @@
 #members-container {
     display: flex;
     flex-direction: column;
+    padding-top: 30px;
 }
+
+#addFirstMemberBtn {
+    width: 40%;
+    margin-top: 100px;
+}
+
+.input-member {
+    width: 70%;
+    margin-top: 5px;
+}
+
+.input-date {
+    text-align: left;
+}
+
+.bg-first {
+    background-color: #E8FBFF;
+    border-radius: 5px;
+}
+
+.label-width {
+    width: 15%;
+}
+
+.btn-update {
+    display: block;
+    width: 40%;
+    margin-top: 5px;
+}
+
+.btn-parent-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+}
+
+.btn-center-grid {
+    grid-column-start: 8;
+    grid-column-end: 14;
+}
+
+.btn-right-grid {
+    grid-column-start: 20;
+    grid-column-end: 21;
+}
+
+.btn-pre-right-grid {
+    grid-column-start: 19;
+    grid-column-end: 20;
+}
+
+@media screen and (max-width: 640px) {
+    .btn-parent-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .btn-center-grid {
+        grid-column-start: 1;
+        grid-column-end: 6;
+    }
+    
+    .btn-right-grid {
+        grid-column-start: 5;
+        grid-column-end: 6;
+    }
+    
+    .btn-pre-right-grid {
+        grid-column-start: 4;
+        grid-column-end: 5;
+    }
+  }
