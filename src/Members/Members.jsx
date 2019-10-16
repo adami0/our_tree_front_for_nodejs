@@ -93,7 +93,7 @@ class Members extends React.Component {
                 })}
                 {this.state.arrayMembersWithoutFirst.map(el => {
                     return (
-                        <div key={el.id} className="siimple--mx-auto input-member siimple-card">
+                        <div key={el.id} className="siimple--mx-auto input-member siimple-card bg-member-card">
                             {this.state.updateMemberBtnClicked[el.id] ? <div className="siimple-card-body">
                                 <input type="text" className="siimple--mx-auto siimple-input input-member" placeholder="firstname*" value={this.state.firstname} required onChange={(evt) => this.handleFirstname(evt)}></input>
                                 <input type="text" className="siimple--mx-auto siimple-input input-member" placeholder="lastname*" value={this.state.lastname} required onChange={(evt) => this.handleLastname(evt)}></input>
@@ -184,6 +184,7 @@ class Members extends React.Component {
         }*/
     }
 
+    //hide input for members (only not first)
     hideMemberInput() {
         this.refs[1].classList.add("hide");
         this.refs[2].classList.add("hide");
@@ -427,6 +428,7 @@ class Members extends React.Component {
         })
     }
 
+    //used to save relationship between two members
     saveRelationship() {
         const relationship = { member1_id: this.state.member1_id, member2_id: this.state.member2_id, relationship_type_code: this.state.relationshipType, member1_role_code: 2, member2_role_code: 2 }
         fetch('http://localhost:8000/api/relationship/post_relationship', {
@@ -442,6 +444,7 @@ class Members extends React.Component {
         })
     }
 
+    //to hide inputs displayed to modify member
     cancelUpdate = (el) => {
         console.log(el);
         console.log(this);
@@ -492,9 +495,11 @@ class Members extends React.Component {
     }
     }
 
+
     updateMember = (el) => {
         console.log(el);
         console.log(this);
+        //we use an array to know which element modify
         let updateMemberBtnClickedArray = [];
         updateMemberBtnClickedArray[el.id] = true;
         this.setState({

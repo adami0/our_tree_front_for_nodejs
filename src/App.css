@@ -2,6 +2,15 @@ body, * {
   font-family: Bahnschrift, 'Times News Roman', sans-serif;
 }
 
+body {
+  /*background: #bee996;
+  background: radial-gradient(circle, #bee996 0%, rgba(63,135,166,1) 100%);*/
+  background: #efebd4;
+  background: radial-gradient(ellipse at top, #efebd4 0%, rgba(63,135,166,1) 100%);
+  background: radial-gradient(ellipse at top right, #efebd4 -15%, #a7e2fc 30%, rgba(63,135,166,1) 100%);
+  /*#74d4fe*/
+}
+
 .App {
   text-align: center;
 }

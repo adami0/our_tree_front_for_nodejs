@@ -1,0 +1,21 @@
+.grid-3-10 {
+    grid-column-start: 2 !important;
+    grid-column-end: 10 !important;
+    grid-row-start: 4;
+}
+
+.grid-3-10-next {
+    grid-column-start: 2 !important;
+    grid-column-end: 10 !important;
+    grid-row-start: 6;
+}
+
+.grid-3-10-next2 {
+    grid-column-start: 2 !important;
+    grid-column-end: 10 !important;
+    grid-row-start: 8;
+}
+
+.font-size-xl {
+    font-size: x-large;
+}

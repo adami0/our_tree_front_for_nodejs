@@ -34,6 +34,7 @@ class Trees extends React.Component {
                     <div id="inputTreeContainer">
                         <input id="inputTree" className="siimple-input center" type="text" placeholder="Name of your tree" onChange={(evt) => this.handleChangeInputTree(evt)}></input>
                         <button className="siimple-btn siimple-btn--primary btn center" onClick={() => this.createTree()}>Save</button>
+                        <div className="siimple-btn siimple-btn--error siimple-btn center" onClick={() => this.cancelCreateTree()}>Cancel</div>
                     </div>
                     : <button className="siimple-btn siimple-btn--primary btn" onClick={() => this.displayInput()}>Create a tree</button>}
             </div>
@@ -49,6 +50,12 @@ class Trees extends React.Component {
         this.refs[treeId].parentElement.children[2].classList.remove("hide");
         this.refs[treeId].parentElement.children[3].classList.add("hide");
         this.refs[treeId].parentElement.children[4].classList.add("hide");
+    }
+
+    cancelCreateTree() {
+        this.setState({
+            displayInput: false
+        })
     }
 
     //call this function when the component is appearing

@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     padding-top: 30px;
+    min-height: 500px;
 }
 
 #addFirstMemberBtn {
@@ -10,7 +11,7 @@
 }
 
 .input-member {
-    width: 70%;
+    width: 70% !important;
     margin-top: 5px;
 }
 
@@ -53,6 +54,10 @@
     grid-column-end: 20;
 }
 
+.bg-member-card {
+    background: white;
+}
+
 @media screen and (max-width: 640px) {
     .btn-parent-grid {
         display: grid;
@@ -72,5 +77,9 @@
     .btn-pre-right-grid {
         grid-column-start: 4;
         grid-column-end: 5;
+    }
+
+    .label-width {
+        width: 35%;
     }
   }
